@@ -1,0 +1,241 @@
+\documentclass[10pt,aspectratio=169]{beamer}
+\usepackage{poly}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% ================================================================================
+% Metadata
+% ================================================================================
+
+\title{Iterated Local Search (ILS)}
+\subtitle{Metaheurísticas iterativas para optimización combinatoria}
+\author{Integrantes: }
+\institute[ADA]{Curso ADA – Análisis y Diseño de Algoritmos}
+\date{\today}
+
+% ================================================================================
+% Main Body
+% ================================================================================
+
+\begin{document} 
+\maketitle
+% ================================================================================
+\section{Integrante 1: Introducción y fundamentos}
+% ================================================================================
+% ================================================================================
+\section{Integrante 2: Estructura general del ILS}
+% ================================================================================
+%
+================================================================================
+\section{Integrante 3: Aplicación del ILS al FSSP}
+% ================================================================================
+% ================================================================================
+\section{Integrante 4: Criterios de aceptación y variantes}
+% ================================================================================
+% ================================================================================
+\section{Integrante 5: Análisis, conclusiones y referencias}
+% ================================================================================
+
+\begin{frame}{Ventajas generales del ILS}
+
+\begin{itemize}
+	\item Simplicidad estructural y gran eficiencia.
+	\item Requiere pocos parámetros, con resultados competitivos.
+	\item Alterna entre intensificación y diversificación.
+	\item Adaptable a distintos contextos industriales y de investigación.
+\end{itemize}
+\pause
+\begin{block}{Ejemplo práctico}
+En un taller de manufactura, el ILS puede reducir el \textit{makespan} entre 10–15\% frente a una búsqueda local pura (Stützle, 1998).
+\end{block}
+\end{frame}
+
+\begin{frame}{Limitaciones y desafíos}
+\begin{itemize}
+	\item No garantiza el óptimo global.
+	\item Su eficacia depende del diseño de perturbación y criterio de aceptación.
+	\item Requiere calibración específica según el tipo de problema.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Pseudocódigo del ILS aplicado al FSSP}
+
+\begin{algorithm}[H]
+\caption{Iterated Local Search (ILS) para Flow Shop Scheduling Problem}
+\begin{algorithmic}[1]
+\State $s_0 \gets$ NEH\_Inicial()
+\State $s_{best} \gets$ BúsquedaLocal($s_0$)
+\For{$iter = 1$ hasta $MaxIter$}
+	\State $s' \gets$ Perturbar($s_{best}$)
+	\State $s'' \gets$ BúsquedaLocal($s'$)
+	\If{CriterioAceptación($s_{best}, s''$)}
+		\State $s_{best} \gets s''$
+	\EndIf
+\EndFor
+\State \Return $s_{best}$
+\end{algorithmic}
+\end{algorithm}
+\end{frame}
+\begin{frame}{Ejercicio: Instancia pequeña (4 trabajos, 3 máquinas)}
+\small
+\textbf{Datos (tiempos de procesamiento $p_{j,m}$):}
+\[
+\begin{array}{c|ccc}
+\text{Trabajo} & M_1 & M_2 & M_3 \\ \hline
+J1 & 2 & 3 & 2 \\
+J2 & 4 & 1 & 3 \\
+J3 & 3 & 2 & 1 \\
+J4 & 2 & 4 & 2 \\
+\end{array}
+\]
+
+\bigskip
+\textbf{Objetivo:} aplicar NEH $\rightarrow$ Búsqueda Local (swap/reinserción) $\rightarrow$ Perturbación $\rightarrow$ Criterio de aceptación (ILS\_B) y mostrar cálculos del \textit{makespan}.
+\end{frame}
+
+% ------------------------------------------------------------------------
+\begin{frame}{Paso 1 — Construcción NEH}
+\small
+\begin{itemize}
+	\item Calcular sumas por trabajo: \\
+	$sum(J1)=7,\; sum(J2)=8,\; sum(J3)=6,\; sum(J4)=8$. \\
+	Orden descendente (rompiendo empates por índice): $[J2, J4, J1, J3]$.
+	\item Insertar progresivamente el siguiente trabajo en la mejor posición (evaluando \textbf{makespan}).
+\end{itemize}
+
+\bigskip
+\textbf{Insertos (resumen de evaluaciones):}
+\begin{itemize}
+	\item Inicial: $[J2]$ $\Rightarrow$ makespan $=8$.
+	\item Insertar $J4$ $\Rightarrow$ probar $[J4,J2]$ (makespan $=11$) y $[J2,J4]$ (makespan $=12$) $\Rightarrow$ elegir $[J4,J2]$ (11).
+	\item Insertar $J1$ $\Rightarrow$ mejores opciones: $[J4,J2,J1]$ (makespan $=13$) $\Rightarrow$ elegir $[J4,J2,J1]$.
+	\item Insertar $J3$ $\Rightarrow$ probar posiciones $\Rightarrow$ mejor secuencia final: $[J4,J2,J1,J3]$ con \textbf{makespan = 14}.
+\end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------------
+\begin{frame}{Cálculo del makespan (ejemplo corto)}
+\small
+\textbf{Cómo se calcula (reglas):} para secuencia $S$, tabla de finalización $C[i,m]$:
+\[
+\begin{aligned}
+C[1,1] &= p_{S_1,1}, \\
+C[1,m] &= C[1,m-1] + p_{S_1,m},\\
+C[i,1] &= C[i-1,1] + p_{S_i,1},\\
+C[i,m] &= \max(C[i-1,m],C[i,m-1]) + p_{S_i,m}.
+\end{aligned}
+\]
+
+\bigskip
+\textbf{Cálculo parcial para la secuencia final $[J4,J2,J1,J3]$:} (valores resumidos)
+\[
+\text{Makespan} = C[4,3] = 14.
+\]
+\end{frame}
+
+% ------------------------------------------------------------------------
+\begin{frame}{Paso 2 — Búsqueda Local (vecindarios probados)}
+\small
+\textbf{Vecindarios usados:} intercambio (swap) y reinserción (take-and-insert).
+
+\bigskip
+\textbf{Evaluación de vecinos inmediatos de $[J4,J2,J1,J3]$:}
+\begin{itemize}
+	\item Swap posiciones 1–2 $\rightarrow$ $[J2,J4,J1,J3]$ $\Rightarrow$ makespan $=16$ (peor).
+	\item Swap posiciones 2–3 $\rightarrow$ $[J4,J1,J2,J3]$ $\Rightarrow$ makespan $=15$ (peor).
+	\item Reinserciones similares evaluadas (todas muestran makespan $\ge 14$).
+\end{itemize}
+
+\bigskip
+\textbf{Conclusión:} la solución NEH $[J4,J2,J1,J3]$ con makespan $=14$ es localmente óptima respecto a los vecinos evaluados.
+\end{frame}
+
+% ------------------------------------------------------------------------
+\begin{frame}{Paso 3 — Perturbación y aceptación (ILS\_B)}
+\small
+\textbf{Estrategia de perturbación:} intercambio aleatorio de $k$ pares (aquí $k=2$) o reinserción de 1 trabajo en posición aleatoria.
+
+\bigskip
+\textbf{Ejemplo de perturbación:} intercambio aleatorio entre posiciones 2 y 4:
+\[
+[ J4, J2, J1, J3 ] \xrightarrow{\text{perturb}} [ J4, J3, J1, J2 ]
+\]
+makespan de la secuencia perturbada $\Rightarrow$ $=16$ (peor).
+
+\bigskip
+\textbf{Criterio de aceptación (ILS\_B):} aceptar solo si $makespan(s'') < makespan(s_{best})$. \\
+Como la perturbación empeora ($16 \not< 14$), no se acepta y se restaura $s_{best}$.
+\end{frame}
+
+% ------------------------------------------------------------------------
+\begin{frame}{Paso 4 — Resumen del procedimiento y observaciones}
+\small
+\begin{itemize}
+	\item NEH produjo $s_{NEH} = [J4,J2,J1,J3]$ con \textbf{makespan = 14}.
+	\item Búsqueda Local exhaustiva alrededor de $s_{NEH}$ no encontró mejor vecino (local óptimo).
+	\item Perturbaciones moderadas aumentaron el makespan en este caso; con criterio ILS\_B no se aceptan.
+	\item Para escapar de este óptimo local se podría usar ILS\_SA (aceptación probabilística) o ILS\_RW para diversificar.
+\end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------------
+\begin{frame}[fragile]{Pseudocódigo: resolución paso a paso del ejercicio}
+\small
+\begin{algorithm}[H]
+\caption{ResolverInstanciaEjemplo()}
+\begin{algorithmic}[1]
+\State \textbf{Entrada:} Matriz $p_{j,m}$ (4 trabajos × 3 máquinas), $MaxIter$, criterio = ILS\_B
+\State // 1. Solución inicial con NEH
+\State $s \gets$ NEH\_Inicial($p$) \Comment{$s \leftarrow [J4,J2,J1,J3]$}
+\State $ms\_s \gets$ Makespan($s$) \Comment{$ms\_s \leftarrow 14$}
+\State // 2. Búsqueda local sobre $s$
+\State $s'\!, ms\_s' \gets$ BúsquedaLocal($s$) \Comment{evaluar vecinos swap/reinsert}
+\If{$ms\_s' < ms\_s$}
+    \State $s \gets s'$; $ms\_s \gets ms\_s'$
+\Else
+    \State mantener $s$
+\EndIf
+\State // 3. Iteraciones ILS
+\For{$iter \leftarrow 1$ \textbf{to} $MaxIter$}
+    \State $s\_p \gets$ Perturbar($s$) \Comment{ej. swap(2,4)}
+    \State $s\_p \gets$ BúsquedaLocal($s\_p$)
+    \If{CriterioAceptación($s, s\_p$)} \Comment{con ILS\_B: aceptar solo si mejora}
+        \State $s \gets s\_p$
+        \State $ms\_s \gets$ Makespan($s$)
+    \EndIf
+\EndFor
+\State \Return $s, ms\_s$
+\end{algorithmic}
+\end{algorithm}
+\end{frame}
+
+\begin{frame}{Conclusiones generales}
+\begin{itemize}[]
+	\item El ILS es un método robusto, flexible y eficiente.
+	\item Su simplicidad lo hace ideal para problemas reales.
+	\item Balancea correctamente exploración y explotación.
+\end{itemize}
+
+\pause
+\begin{block}{Reflexión final}
+“El verdadero valor del ILS no está en reinventar la búsqueda local, sino en enseñarle a escapar de sí misma.” — \textit{Lourenço et al., 2003}
+\end{block}
+\end{frame}
+
+\begin{frame}{Referencias}
+\footnotesize
+\begin{thebibliography}{99}
+\bibitem{stutzle1998} Stützle, T. (1998). \textit{Iterated local search for the quadratic assignment problem.} AIDA-98-04, Darmstadt University.
+\bibitem{lourenco2003} Lourenço, H. R., Martin, O. C., \& Stützle, T. (2003). \textit{Iterated Local Search.} Handbook of Metaheuristics. Springer.
+\bibitem{ruiz2005} Ruiz, R., \& Maroto, C. (2005). \textit{Permutation flowshop heuristics.} European Journal of Operational Research, 165(2), 479–494.
+\bibitem{blum2003} Blum, C., \& Roli, A. (2003). \textit{Metaheuristics in combinatorial optimization.} ACM Computing Surveys, 35(3), 268–308.
+\bibitem{prins2004} Prins, C. (2004). \textit{Evolutionary algorithm for VRP.} Computers \& Operations Research, 31(12), 1985–2002.
+\end{thebibliography}
+\end{frame}
+
+% ================================================================================
+\backmatter
+% ================================================================================
+
+\end{document}
