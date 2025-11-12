@@ -27,9 +27,149 @@
 \section{Integrante 2: Estructura general del ILS}
 % ================================================================================
 %
-================================================================================
+
 \section{Integrante 3: Aplicación del ILS al FSSP}
 % ================================================================================
+
+\section{Aplicación del ILS al FSSP}
+
+%------------------ Mapa de tu sección -------------------
+\begin{frame}{Que veremos en esta seccion}
+  \begin{itemize}
+    \item ¿Qué es el \textbf{Flow Shop Scheduling Problem (FSSP)}?
+    \item Cómo se adapta \textbf{ILS} para resolver FSSP
+    \item \textbf{Solución inicial}: heurística NEH
+    \item \textbf{Búsqueda local}: vecindarios (reinserción, intercambio)
+    \item \textbf{Perturbación}: cambio fuerte para escapar de óptimos locales
+    \item \textbf{Pseudocódigo} de ILS-FSSP y métricas
+  \end{itemize}
+\end{frame}
+
+%------------------ ¿Qué es FSSP? ------------------------
+\begin{frame}{¿Qué es el FSSP?}
+  \begin{itemize}
+    \item Tenemos $n$ \textbf{trabajos} (tareas/productos) que deben procesarse en $m$ \textbf{máquinas}.
+    \item Todos los trabajos pasan por las máquinas \textbf{en el mismo orden}: $M_1 \rightarrow M_2 \rightarrow \dots \rightarrow M_m$.
+    \item Objetivo típico: \textbf{minimizar el makespan} $C_{\max}$ (tiempo total para terminar todos los trabajos).
+    \item \textbf{Difícil} porque el número de posibles secuencias es $n!$ (explota rápidamente).
+  \end{itemize}
+
+  % TODO: reemplaza por una imagen si quieres
+  \begin{center}
+    \fbox{\parbox{0.9\linewidth}{\centering \textbf{TODO: imagen}\\
+    Diagrama de flujo de trabajos por máquinas: $M_1 \rightarrow M_2 \rightarrow M_3$}}
+  \end{center}
+\end{frame}
+
+%------------------ Ejemplo Panadería --------------------
+\begin{frame}{Ejemplo cotidiano: Panadería (3 máquinas)}
+  \small
+  \begin{center}
+  \begin{tabular}{lccc}
+    \toprule
+    \textbf{Pan} & Amasar $(M_1)$ & Hornear $(M_2)$ & Empaquetar $(M_3)$ \\
+    \midrule
+    A & 5 & 7 & 2 \\
+    B & 4 & 3 & 5 \\
+    C & 6 & 5 & 3 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vspace{4mm}
+  \begin{itemize}
+    \item Queremos el \textbf{orden de panes} (A, B, C, ...) que minimiza el tiempo total $C_{\max}$.
+    \item Evaluar todas las permutaciones es inviable cuando $n$ crece $\Rightarrow$ usamos \textbf{ILS}.
+  \end{itemize}
+
+  \begin{center}
+    \fbox{\parbox{0.9\linewidth}{\centering \textbf{TODO: imagen}\\
+    Foto/ícono de panadería o línea de producción}}
+  \end{center}
+\end{frame}
+
+%------------------ ILS para FSSP (visión general) -------
+\begin{frame}{Cómo ILS se aplica al FSSP (visión general)}
+  \begin{enumerate}
+    \item \textbf{Solución inicial}: construir una buena secuencia (NEH).
+    \item \textbf{Búsqueda local}: mejorar la secuencia con vecindarios.
+    \item \textbf{Perturbación}: realizar un \emph{cambio fuerte} para escapar de óptimos locales.
+    \item \textbf{Aceptar/Rechazar}: decidir desde qué solución continuar.
+    \item \textbf{Repetir} hasta cumplir el criterio de parada (tiempo/iteraciones).
+  \end{enumerate}
+
+  \begin{center}
+    \fbox{\parbox{0.9\linewidth}{\centering \textbf{TODO: imagen}\\
+    Infografía de ciclo: \emph{NEH} $\rightarrow$ BL $\rightarrow$ Perturbación $\rightarrow$ Aceptación $\rightarrow$ Repetir}}
+  \end{center}
+\end{frame}
+
+%------------------ NEH como solución inicial ------------
+\begin{frame}{Solución inicial con NEH}
+  \begin{itemize}
+    \item \textbf{NEH (Nawaz–Enscore–Ham)} es una heurística constructiva muy efectiva para FSSP.
+    \item Idea resumida: ordenar trabajos por “peso” (suma de tiempos), e insertar iterativamente en la posición que \textbf{minimiza} $C_{\max}$ parcial.
+    \item Ventaja: parte de una secuencia \textbf{ya buena}, acelerando ILS.
+  \end{itemize}
+
+  \begin{center}
+    \fbox{\parbox{0.9\linewidth}{\centering \textbf{TODO: imagen}\\
+    Diagrama simple: orden por suma de tiempos y construcción por inserciones óptimas}}
+  \end{center}
+\end{frame}
+
+%------------------ Búsqueda local: vecindarios ----------
+\begin{frame}{Búsqueda local: vecindarios en FSSP}
+  \begin{itemize}
+    \item \textbf{Reinserción}: quitar un trabajo de la posición $i$ y colocarlo en la posición $j$.
+    \item \textbf{Intercambio} (swap): intercambiar las posiciones de dos trabajos.
+  \end{itemize}
+
+  \begin{center}
+    \fbox{\parbox{0.9\linewidth}{\centering \textbf{TODO: imagen}\\
+    Bocetos de reinserción vs intercambio en una secuencia [\;1\;2\;3\;4\;5\;]}}
+  \end{center}
+\end{frame}
+
+%------------------ Perturbación -------------------------
+\begin{frame}{Perturbación (cambio fuerte)}
+  \begin{itemize}
+    \item Cuando la BL ya no mejora (\textbf{óptimo local}), aplicamos una \textbf{perturbación}:
+      \begin{itemize}
+        \item Ejemplo típico: \textbf{intercambiar dos pares aleatorios de trabajos}.
+        \item O invertir un bloque largo, o múltiples reinserciones encadenadas.
+      \end{itemize}
+    \item Objetivo: \textbf{escapar} del óptimo local para explorar otra región de soluciones.
+    \item Luego se ejecuta \textbf{búsqueda local} sobre la solución perturbada.
+  \end{itemize}
+
+  \begin{center}
+    \fbox{\parbox{0.9\linewidth}{\centering \textbf{TODO: imagen}\\
+    Visual: secuencia antes/después de un cambio fuerte}}
+  \end{center}
+\end{frame}
+
+%------------------ Pseudocódigo ILS-FSSP ----------------
+\begin{frame}{Pseudocódigo resumido de ILS para FSSP}
+\small
+\begin{algorithm}[H]
+\caption{ILS-FSSP (resumen)}
+\begin{algorithmic}[1]
+\State $s \gets$ NEH() \Comment{Solución inicial “buena”}
+\State $s \gets$ BusquedaLocal($s$) \Comment{Reinserción / Intercambio}
+\State $sb \gets s$ \Comment{Mejor global}
+\While{\textit{tiempo $<$ límite} \textbf{ o } \textit{iter $<$ maxIters}}
+  \State $s' \gets$ Perturbar($s$) \Comment{p.ej., 2 swaps aleatorios}
+  \State $s' \gets$ BusquedaLocal($s'$)
+  \If{$C_{\max}(s') < C_{\max}(sb)$}
+     \State $sb \gets s'$
+  \EndIf
+  \State $s \gets$ CriterioAceptacion($s$, $s'$) \Comment{Better / RandomWalk / SA}
+\EndWhile
+\State \Return $sb$
+\end{algorithmic}
+\end{algorithm}
+\end{frame}
+
 % ================================================================================
 \section{Integrante 4: Criterios de aceptación y variantes}
 % ================================================================================
