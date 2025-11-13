@@ -170,12 +170,14 @@
 \end{algorithm}
 \end{frame}
 
+
+
+
 % ================================================================================
 \section{Integrante 4: Criterios de aceptación y variantes}
+% =====================================================
 
-% =====================================================
-% INTEGRANTE 4 — Criterios de aceptación y sus variantes
-% =====================================================
+% =======================CRITERIOS==============================
 \begin{frame}{Criterios de aceptación en ILS}
 \small
 En \textbf{ILS}, el criterio de aceptación decide cuándo una nueva solución  
@@ -199,7 +201,7 @@ y \textcolor{orange!70!black}{\textit{explotar}} las mejores soluciones conocida
 \end{frame}
 
 
-% -----------------------------------------------------
+% --------------------Pseudocódigo del ILS_B---------------------------------
 % -----------------------------------------------------
 \begin{frame}{Pseudocódigo del ILS\_B (criterio Better — intensificación)}
 
@@ -227,7 +229,6 @@ y \textcolor{orange!70!black}{\textit{explotar}} las mejores soluciones conocida
 \end{algorithm}
 \end{column}
 
-% --------------------- COLUMNA DERECHA: Explicación ---------------------
 \begin{column}{0.55\textwidth}
 \small
 \textbf{Descripción general:}\\
@@ -272,9 +273,9 @@ La búsqueda se concentra cerca de la mejor solución conocida.
 
 \end{frame}
 
-% -----------------------------------------------------
+% ----------------Pseudocódigo del ILS_RW -------------------------------------
 
-\begin{frame}{Pseudocódig del ILS\_RW con criterio de aceptación \textit{Random Walk}}
+\begin{frame}{Pseudocódigo del ILS\_RW con criterio de aceptación \textit{Random Walk}}
 \begin{columns}[T]
 \begin{column}{0.55\textwidth}
 
@@ -322,12 +323,11 @@ al aceptar soluciones peores.
 \end{frame}
 
 
-% -----------------------------------------------------
+% ------------------------Pseudocódigo del ILS_SA -----------------------------
 \begin{frame}{Pseudocódigo del ILS\_SA (criterio Simulated Annealing — equilibrio I)}
 
 \begin{columns}[T]
 
-% --------------------- COLUMNA IZQUIERDA: Explicación ---------------------
 \begin{column}{0.55\textwidth}
 \small
 \textbf{Descripción general:}\\
@@ -358,7 +358,6 @@ según una probabilidad que depende de la \textit{temperatura} $T$.
 
 \end{column}
 
-% --------------------- COLUMNA DERECHA: Código ---------------------
 \begin{column}{0.55\textwidth}
 \begin{algorithm}[H]
 \caption{ILS\_SA — Simulated Annealing}
@@ -390,7 +389,8 @@ según una probabilidad que depende de la \textit{temperatura} $T$.
 
 \begin{columns}[T]
 
-% --------------------- COLUMNA IZQUIERDA: EXPLICACIÓN ---------------------
+
+
 \begin{column}{0.55\textwidth}
 \small
 \textbf{Criterio de aceptación (SA):}\\[-4pt]
@@ -416,7 +416,6 @@ donde $T$ es la \textbf{temperatura}, que controla el equilibrio entre
 
 \end{column}
 
-% --------------------- COLUMNA DERECHA: CÓDIGO ---------------------
 \begin{column}{0.45\textwidth}
 \begin{algorithm}[H]
 \caption{Criterio de aceptación SA}
@@ -441,7 +440,7 @@ donde $T$ es la \textbf{temperatura}, que controla el equilibrio entre
 
 
 % -----------------------------------------------------
-%=====================================================
+%====================COMPARACION=================================
 \begin{frame}{Comparación de comportamientos entre los tres criterios}
 \small
 \begin{table}[H]
@@ -460,7 +459,7 @@ Control de probabilidad   & Simple & Nulo & Depende de $T$ \\
 \end{tabular}
 \end{table}
 
-\begin{block}{Interpretación}
+\begin{block}{ }
 El criterio de aceptación actúa como un \textbf{filtro adaptativo} dentro del ILS,  
 determinando cómo se equilibra la \textit{exploración} y la \textit{intensificación}.  
 Un balance adecuado mejora la calidad y diversidad de las soluciones obtenidas. ��
@@ -470,7 +469,7 @@ Un balance adecuado mejora la calidad y diversidad de las soluciones obtenidas. 
 
 
 
-% -----------------------------------------------------
+% -----------------VENTAJAS Y DESVENTAJAS------------------------------------
 \begin{frame}{Ventajas y desventajas de los criterios}
 \small
 \begin{table}[H]
