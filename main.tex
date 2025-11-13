@@ -29,6 +29,106 @@
 % ================================================================================
 %
 
+\section{Estructura general del ILS}
+
+\begin{frame}{Componentes principales del ILS}
+  \begin{itemize}
+    \item \textbf{Solución inicial:} punto de partida del algoritmo, puede ser aleatoria o heurística.
+    \item \textbf{Búsqueda local:} Este procedimiento se aplica para alcanzar un óptimo local. \\
+    
+    \item \textbf{Perturbación:} modifica la solución actual para escapar de un óptimo local.
+    \item \textbf{Criterio de aceptación:} determina si la búsqueda continúa desde la solución actual o desde el nuevo óptimo local encontrado.
+  \end{itemize}
+
+  \vspace{0.2cm}
+  \begin{center}
+    \fbox{\parbox{0.9\linewidth}{\centering \
+    Diagrama del flujo ILS: Solución inicial → Búsqueda local → Perturbación → Aceptación → Repetir}}
+  \end{center}
+\end{frame}
+
+
+%---------- Pseudocódigo básico -------------------
+\begin{frame}{Pseudocódigo básico del ILS}
+\small
+\begin{algorithm}[H]
+\caption{Iterated Local Search (básico)}
+\begin{algorithmic}[1]
+\State $s_0 \gets$ GenerarSoluciónInicial()
+\State $s^* \gets$ BúsquedaLocal($s_0$)
+\State $s_{best} \gets s^*$
+\While{no se cumpla el criterio de parada}
+  \State $s' \gets$ Perturbar($s^*$)
+  \State $s^{*'} \gets$ BúsquedaLocal($s'$)
+  \State $s^* \gets$ CriterioAceptación($s^*, s^{*'}$)
+  \If{$f(s^*) < f(s_{best})$}
+     \State $s_{best} \gets s^*$
+  \EndIf
+\EndWhile
+\State \Return $s_{best}$
+\end{algorithmic}
+\end{algorithm}
+\end{frame}
+
+%-----------Intensificación y diversificación -----
+\begin{frame}{Intensificación y diversificación}
+  \begin{columns}
+  \column{0.5\textwidth}
+    \textbf{Intensificación:}
+    \begin{itemize}
+      \item Explorar a fondo una región prometedora.
+      \item Se logra mediante la búsqueda local (mejorar soluciones cercanas).
+      \item Aumenta la calidad de soluciones similares.
+    \end{itemize}
+
+  \column{0.5\textwidth}
+    \textbf{Diversificación:}
+    \begin{itemize}
+      \item Explorar nuevas regiones del espacio de búsqueda.
+      \item Se logra con perturbaciones más fuertes y el criterio de aceptación.
+      \item Evita estancarse en óptimos locales.
+    \end{itemize}
+  \end{columns}
+
+  \vspace{0.3cm}
+  \begin{block}{Balance}
+  Un buen ILS combina ambas estrategias para lograr una búsqueda eficiente y robusta.
+  \end{block}
+\end{frame}
+
+%--------- Ejemplo ilustrativo --------
+\begin{frame}{Ejemplo ilustrativo del funcionamiento de ILS}
+  \small
+  \begin{enumerate}
+    \item \textbf{Paso 1 – Solución inicial:}  
+    Se genera una ruta aleatoria entre 5 ciudades (A, B, C, D, E).  
+    Ejemplo: A → B → C → D → E → A  
+    \hfill Costo: 350 km
+
+    \item \textbf{Paso 2 – Búsqueda local (Intensificación):}  
+    Se intercambian nodos cercanos (2-opt) para mejorar la distancia.  
+    Nueva ruta: A → B → D → C → E → A  
+    \hfill Costo: 310 km
+
+    \item \textbf{Paso 3 – Perturbación (Diversificación):}  
+    Se altera el orden de varias ciudades para escapar del óptimo local.  
+    Nueva ruta: A → D → B → E → C → A  
+    \hfill Costo: 340 km
+
+    \item \textbf{Paso 4 – Nueva búsqueda local:}  
+    Desde esta nueva región, se encuentra una mejor solución.  
+    Nueva ruta: A → D → C → E → B → A  
+    \hfill Costo: 280 km
+
+    \item \textbf{Paso 5 – Repetición:}  
+    Se repite el ciclo de intensificación y diversificación hasta que no haya mejoras en la ruta.
+  \end{enumerate}
+\end{frame}
+
+% ================================================================================
+%
+
+
 \section{Integrante 3: Aplicación del ILS al FSSP}
 % ================================================================================
 
