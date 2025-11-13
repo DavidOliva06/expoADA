@@ -172,7 +172,332 @@
 
 % ================================================================================
 \section{Integrante 4: Criterios de aceptación y variantes}
-% ================================================================================
+
+% =====================================================
+% INTEGRANTE 4 — Criterios de aceptación y sus variantes
+% =====================================================
+\begin{frame}{Criterios de aceptación en ILS}
+\small
+En \textbf{ILS}, el criterio de aceptación decide cuándo una nueva solución  
+reemplaza a la actual, equilibrando la \textit{exploración} y la \textit{explotación} del espacio de búsqueda.
+
+
+\bigskip
+\textbf{Tipos principales de criterios:}
+\begin{itemize}
+    \item \textbf{Better} — Fomenta la \textit{intensificación}: solo acepta mejoras directas.  
+    \item \textbf{Random Walk} — Promueve la \textit{diversificación}: acepta cualquier solución.  
+    \item \textbf{Simulated Annealing} — Busca un \textit{equilibrio}: acepta soluciones peores con cierta probabilidad dependiente de la temperatura.
+\end{itemize}
+
+\medskip
+\begin{block}{\centering }
+--> Cada criterio ajusta el \textbf{balance} entre 
+\textcolor{blue!70!black}{\textit{explorar}} nuevas regiones del espacio de búsqueda 
+y \textcolor{orange!70!black}{\textit{explotar}} las mejores soluciones conocidas.
+\end{block}
+\end{frame}
+
+
+% -----------------------------------------------------
+% -----------------------------------------------------
+\begin{frame}{Pseudocódigo del ILS\_B (criterio Better — intensificación)}
+
+\begin{columns}[T]
+
+% --------------------- COLUMNA IZQUIERDA: Código ---------------------
+\begin{column}{0.45\textwidth}
+\begin{algorithm}[H]
+\caption{ILS\_B — Criterio de aceptación Better}
+\begin{algorithmic}[1]
+\State $s \gets$ NEH()
+\State $s \gets$ BúsquedaLocal($s$)
+\State $s_b \gets s$
+\While{tiempo $<$ límite}
+	\State $s \gets$ Perturbar($s_b$)
+	\State $s \gets$ BúsquedaLocal($s$)
+	\If{$C_{max}(s_b) > C_{max}(s)$}
+		\State $s_b \gets s$
+	\Else
+		\State $s \gets s_b$
+	\EndIf
+\EndWhile
+\State \Return $s_b$
+\end{algorithmic}
+\end{algorithm}
+\end{column}
+
+% --------------------- COLUMNA DERECHA: Explicación ---------------------
+\begin{column}{0.55\textwidth}
+\small
+\textbf{Descripción general:}\\
+El algoritmo ILS\_B maneja dos soluciones principales:  
+\begin{itemize}
+  \item $s$: la \textit{solución actual}.  
+  \item $s_b$: la \textit{mejor solución encontrada hasta el momento}.  
+\end{itemize}
+
+\medskip
+\textbf{Funcionamiento:}\\[-4pt]
+\begin{itemize}
+  \item En cada iteración, se genera una nueva solución perturbando $s_b$.  
+  \item Se aplica una búsqueda local para mejorarla.  
+  \item Si la nueva solución $s$ mejora el valor de $C_{max}$ respecto a $s_b$,  
+        entonces $s_b$ se actualiza con $s$.  
+  \item Si no mejora, se descarta $s$ y se vuelve a usar $s_b$.  
+\end{itemize}
+
+\medskip
+   \begin{columns}[T,totalwidth=\textwidth]
+% -------- COLUMNA 1: Criterio --------
+   \begin{column}{0.48\textwidth}
+    \textbf{Criterio “Better”:}\\[-4pt]
+Solo se aceptan soluciones que sean mejores.  
+La búsqueda se concentra cerca de la mejor solución conocida.  
+
+   \end{column}
+
+% -------- COLUMNA 2: Efecto --------
+  \begin{column}{0.48\textwidth}
+\textbf{Efecto:}\\[-4pt]
+\begin{itemize}
+  \item �� Alta intensificación.  
+  \item �� Baja exploración.  
+  \item  Riesgo de óptimos locales.  
+   \end{itemize}
+   \end{column}
+   \end{columns}
+  \end{column}
+ \end{columns}
+
+\end{frame}
+
+% -----------------------------------------------------
+
+\begin{frame}{Pseudocódig del ILS\_RW con criterio de aceptación \textit{Random Walk}}
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
+
+\begin{algorithm}[H]
+\caption{ILS\_RW — Criterio de aceptación Random Walk}
+\begin{algorithmic}[1]
+\State $s \gets$ NEH()
+\State $s \gets$ BúsquedaLocal($s$)
+\State $s_b \gets s$
+\While{tiempo $<$ límite}
+    \State $s \gets$ Perturbar($s$)
+    \State $s \gets$ BúsquedaLocal($s$)
+    \If{$C_{max}(s_b) > C_{max}(s)$}
+        \State $s_b \gets s$
+    \EndIf
+    \Comment{No se restaura $s = s_b$}
+\EndWhile
+\State \Return $s_b$
+\end{algorithmic}
+\end{algorithm}
+
+\end{column}
+\begin{column}{0.43\textwidth}
+\smallskip
+\textbf{Descripción general:}\\
+Este enfoque se asemeja al ILS\_B,  
+utiliza una solución actual $s$ y la mejor $s_b$,  
+pero cambia el criterio de aceptación.  
+
+\medskip
+\textbf{Criterio “Random Walk”:}\\
+Se aceptan todas las soluciones, sean mejores o peores.  
+Elimina la restauración de $s = s_b$,  
+lo que permite continuar la búsqueda  
+desde la última solución encontrada.  
+
+\medskip
+\textbf{Efecto:}\\
+Promueve una búsqueda más \textit{aleatoria y amplia},  
+incrementando la \textbf{diversificación} del espacio de búsqueda ��.  
+Sin embargo, puede perder calidad temporalmente  
+al aceptar soluciones peores.
+\end{column}
+\end{columns}
+\end{frame}
+
+
+% -----------------------------------------------------
+\begin{frame}{Pseudocódigo del ILS\_SA (criterio Simulated Annealing — equilibrio I)}
+
+\begin{columns}[T]
+
+% --------------------- COLUMNA IZQUIERDA: Explicación ---------------------
+\begin{column}{0.55\textwidth}
+\small
+\textbf{Descripción general:}\\
+ILS\_SA maneja tres soluciones principales:
+\begin{itemize}
+  \item $s$: \textit{solución actual.}\\[-6pt]
+  \item $s'$: \textit{nueva solución generada.}\\[-6pt]
+  \item $s_b$: \textit{mejor solución encontrada.}\\[-6pt]
+\end{itemize}
+
+\medskip
+\textbf{Funcionamiento:}\\[-4pt]
+\begin{itemize}
+  \item Parte de una solución inicial generada por NEH.\\[-6pt]  
+  \item Aplica búsqueda local para mejorarla.\\[-6pt]
+  \item En cada iteración:
+  \begin{itemize}
+    \item Copia la solución actual $s$ en $s'$.  
+    \item Perturba $s'$ y luego la mejora con búsqueda local.  
+    \item Compara el valor de $C_{max}$ entre $s$ y $s'$.  
+  \end{itemize}
+\end{itemize}
+
+\medskip
+\textbf{Idea principal:}\\[-2pt]
+El criterio \textbf{Simulated Annealing (SA)} decide si reemplazar la solución actual $s$ por la nueva $s'$  
+según una probabilidad que depende de la \textit{temperatura} $T$.
+
+\end{column}
+
+% --------------------- COLUMNA DERECHA: Código ---------------------
+\begin{column}{0.55\textwidth}
+\begin{algorithm}[H]
+\caption{ILS\_SA — Simulated Annealing}
+\begin{algorithmic}[1]
+\State $s \gets$ NEH()
+\State $s \gets$ BúsquedaLocal($s$)
+\State $s_b \gets s$
+\While{tiempo $<$ límite}
+	\State $s' \gets$ Copiar($s$)
+	\State $s' \gets$ Perturbar($s', d$)
+	\State $s' \gets$ BúsquedaLocal($s'$)
+	\If{$C_{max}(s) > C_{max}(s')$}
+		\State $s \gets s'$
+		\If{$C_{max}(s_b) > C_{max}(s)$}
+			\State $s_b \gets s$ 
+            \EndIf
+	\ElsIf{$random \leq e^{-(C_{max}(s') - C_{max}(s))/T}$}
+		\State $s \gets s'$ 
+\EndWhile
+\State \Return $s_b$
+\end{algorithmic}
+\end{algorithm}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Criterio de aceptación Simulated Annealing — equilibrio II}
+
+\begin{columns}[T]
+
+% --------------------- COLUMNA IZQUIERDA: EXPLICACIÓN ---------------------
+\begin{column}{0.55\textwidth}
+\small
+\textbf{Criterio de aceptación (SA):}\\[-4pt]
+\begin{itemize}
+  \item Si $s'$ es \textbf{mejor}, se reemplaza $s = s'$.\\[-4pt]
+  \item Si $s'$ es \textbf{peor}, puede aceptarse con una probabilidad:
+\end{itemize}
+
+\[
+P = e^{-\frac{C_{max}(s') - C_{max}(s)}{T}}
+\]
+
+donde $T$ es la \textbf{temperatura}, que controla el equilibrio entre  
+\textit{exploración} e \textit{intensificación}.\\[4pt]
+
+\textbf{Interpretación:}\\[-4pt]
+\begin{itemize}
+  \item Con $T$ alta → mayor probabilidad de aceptar soluciones peores.  
+  \item Con $T$ baja → se aceptan solo mejoras claras.  
+  \item Permite escapar de óptimos locales al inicio  
+        y concentrarse luego en las mejores zonas.  
+\end{itemize}
+
+\end{column}
+
+% --------------------- COLUMNA DERECHA: CÓDIGO ---------------------
+\begin{column}{0.45\textwidth}
+\begin{algorithm}[H]
+\caption{Criterio de aceptación SA}
+\begin{algorithmic}[1]
+\If{$C_{max}(s') < C_{max}(s)$}
+    \State $s \gets s'$
+    \If{$C_{max}(s_b) > C_{max}(s)$}
+        \State $s_b \gets s$
+    \EndIf
+\ElsIf{$random \leq e^{-(C_{max}(s') - C_{max}(s))/T}$}
+    \State $s \gets s'$
+\EndIf
+\State \Return $s_b$
+\end{algorithmic}
+\end{algorithm}
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+
+
+% -----------------------------------------------------
+%=====================================================
+\begin{frame}{Comparación de comportamientos entre los tres criterios}
+\small
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3} % Espaciado entre filas
+\begin{tabular}{p{3.3cm}ccc}
+\toprule
+\textbf{Característica} & \textbf{Better} & \textbf{Random Walk} & \textbf{Simulated Annealing} \\ 
+\midrule
+Acepta soluciones peores &  No &   Siempre &   A veces \\ 
+Exploración global        & �� Baja & �� Alta & Media–Alta \\ 
+Intensificación           & �� Alta & �� Baja &  Equilibrada \\ 
+Riesgo de óptimo local    &  Alto &  Bajo &  Medio–Bajo \\ 
+Control de probabilidad   & Simple & Nulo & Depende de $T$ \\ 
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{block}{Interpretación}
+El criterio de aceptación actúa como un \textbf{filtro adaptativo} dentro del ILS,  
+determinando cómo se equilibra la \textit{exploración} y la \textit{intensificación}.  
+Un balance adecuado mejora la calidad y diversidad de las soluciones obtenidas. ��
+\end{block}
+\end{frame}
+%=====================================================
+
+
+
+% -----------------------------------------------------
+\begin{frame}{Ventajas y desventajas de los criterios}
+\small
+\begin{table}[H]
+\centering
+\begin{tabular}{p{2.8cm}p{4cm}p{4cm}}
+\toprule
+\textbf{Criterio} & \textbf{Ventajas} & \textbf{Desventajas} \\ \midrule
+\textbf{Better} &
+\begin{itemize}\item Simplicidad y rapidez.\item Asegura mejora continua.\end{itemize} &
+\begin{itemize}\item Se estanca en óptimos locales.\item Poca exploración global.\end{itemize} \\ \midrule
+\textbf{Random Walk} &
+\begin{itemize}\item Explora todo el espacio de búsqueda.\item Escapa fácilmente de óptimos locales.\end{itemize} &
+\begin{itemize}\item No garantiza mejora.\item Puede perder calidad de solución.\end{itemize} \\ \midrule
+\textbf{Simulated Annealing} &
+\begin{itemize}\item Balancea exploración e intensificación.\item Evita el estancamiento prematuro.\end{itemize} &
+\begin{itemize}\item Requiere calibrar temperatura $T$.\item Mayor costo computacional.\end{itemize} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+
+
+\end{frame}
+
+
+
+
+
 % ================================================================================
 \section{Integrante 5: Análisis, conclusiones y referencias}
 % ================================================================================
